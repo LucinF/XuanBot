@@ -87,7 +87,7 @@ class Live_subscribe(Base):
         try:
             result = await self.select()
             if  not result.error:
-                return Result.IntResult(error=True,info='Exist',result=result.result)
+                return Result.IntResult(error=True,info=f'The uid:{self.uid} group:{self.subscriber_id} was existed',result=result.result)
             elif result.error and result.result == 0:
                 async_session = DB().get_session()
                 async with async_session.begin() as session:
@@ -102,7 +102,7 @@ class Live_subscribe(Base):
     async def delete(self) -> Result.IntResult:
         try:
             result = await self.select()
-            if  (not result.error) or (result.error and result.result == 0):
+            if not result.error :
                 async_session = DB().get_session()
                 async with async_session.begin() as session:
                     session.delete(self)

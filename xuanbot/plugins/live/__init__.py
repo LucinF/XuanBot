@@ -1,5 +1,7 @@
 
 
+from math import fabs
+from unittest import result
 import nonebot
 from nonebot import  on_command
 from nonebot.adapters.onebot.v11 import Bot,MessageSegment, ActionFailed, GroupMessageEvent
@@ -19,8 +21,7 @@ from nonebot.matcher import Matcher
 from nonebot.adapters import Message
 from nonebot.params import Arg, CommandArg, ArgPlainText,EventPlainText
 
-# uid_temp = '11475378'
-# group = '224256871'
+
 live_statu = {}
 
 live = on_command("live", aliases={'live'}, priority=3,permission=SUPERUSER)
@@ -30,10 +31,6 @@ async def live_handle(matcher: Matcher, event:GroupMessageEvent,args: Message = 
     plain_text = args.extract_plain_text().strip()  # 首次发送命令时跟随的参数，例：/天气 上海，则args为上海
     if plain_text:
         matcher.set_arg('live',args)
-        # if plain_text[0].isdigit():
-        #     live_table = Database.Live_subscribe(uid=plain_text[0],subscriber_id=str(event.group_id))
-        #     await live_table.insert()
-        #     await matcher.finish(f'uid:{plain_text[0]} insert success.')
 
 
 @live.got('live',prompt='Give me uid who you wanna to push')
@@ -41,9 +38,16 @@ async def live_got(matcher: Matcher, event:GroupMessageEvent,uid:str=ArgPlainTex
     list = uid.strip().split()
     if list and list[0].isdigit():
         uid = list[0]
-        live_table = Database.Live_subscribe(uid=uid,subscriber_id=str(event.group_id))
-        await live_table.insert()
-        await matcher.finish(f'uid:{uid} insert success.')
+        result = await get_live_status_list([uid])
+        if result != []:
+            live_table = Database.Live_subscribe(uid=uid,subscriber_id=str(event.group_id))
+            intResult = await live_table.insert()
+            if intResult.error is False:
+                await matcher.finish(f'uid:{uid} insert success.')
+            else:
+                await matcher.finish(f'The uid:{uid} insert failed because of {intResult.info}.')
+        else:
+            await matcher.finish(f'the uper(uid:{uid}) is non-existen.')
     else:
         await matcher.finish(f'the parm is invalid.')
 
@@ -51,26 +55,6 @@ async def live_got(matcher: Matcher, event:GroupMessageEvent,uid:str=ArgPlainTex
 
 @scheduler.scheduled_job("interval", seconds=10, id="live_push")
 async def live_push():
-#     result = await get_live_status_list([uid])
-#     result = result[uid]
-#     statu = 0 if result['live_status'] == 2 else result['live_status']
-#     logger.info(f"uid:{uid} info:{statu}")
-#     #print(result)
-#     if statu != live_statu[uid] and statu == 1:
-#         temp = LiveInfo(uid=uid,result=result)
-#         msg = temp.live_at_all()
-#         bot = nonebot.get_bot()
-#         try:
-#                 await bot.call_api("send_msg", **{
-#                     "message": msg,
-#                     "group_id": group
-#                 })
-#                 #pass
-#         except ActionFailed as e:
-#                 print(e)
-#     live_statu[uid] = statu
-
-    #logger.info('start')
     uid_result =await Database.Live_subscribe(uid=' ',subscriber_id=' ').select_uids()
     live_statu_dict = await get_live_status_list(uid_result.result)
     if not live_statu_dict:
