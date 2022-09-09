@@ -2,10 +2,8 @@
 
 ## How to start
 
-1. generate project using `nb create` .
-2. create your plugin using `nb plugin create` .
-3. writing your plugins under `xuanbot/plugins` folder.
-4. run your bot using `nb run` .
+1.create a sqlite database 'xuanbot.db' under 'XuanBot' floder like 'XuanBot/xuanbot.db'.
+2. run your bot using `nb run` .
 
 ## Documentation
 
