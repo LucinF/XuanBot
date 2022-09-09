@@ -6,7 +6,7 @@ from re import T
 import re
 import nonebot
 from nonebot.log import logger
-from sqlalchemy import Column, Integer, String, BLOB, DATETIME, select, distinct, func, Boolean, Text
+from sqlalchemy import Column, Integer, String, BLOB, DATETIME, select, distinct, func, Boolean, Text,delete
 from sqlalchemy.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
@@ -105,7 +105,9 @@ class Live_subscribe(Base):
             if not result.error :
                 async_session = DB().get_session()
                 async with async_session.begin() as session:
-                    session.delete(self)
+                    await session.execute(delete(Live_subscribe).where(
+                            Live_subscribe.uid == self.uid).where(
+                            Live_subscribe.subscriber_id == self.subscriber_id))
                 return Result.IntResult(error=False,info='Instance delete successed',result=0)
             else:
                 return result
