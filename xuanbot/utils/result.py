@@ -1,3 +1,10 @@
+'''
+Description: 
+Autor: LucinF
+Date: 2022-08-13 21:34:50
+LastEditors: LucinF
+LastEditTime: 2022-09-16 14:24:04
+'''
 from dataclasses import dataclass
 import re
 from this import d
@@ -27,3 +34,11 @@ class Result:
 
         def __repr__(self) -> str:
             return f"<ListResult(error={self.error}, info={self.info}, result={self.result})>"
+
+    @dataclass
+    class dictResult(BaseResult):
+        result:dict
+
+        def __repr__(self) -> str:
+            return f"<ListResult(error={self.error}, info={self.info}, result={self.result})>"
+

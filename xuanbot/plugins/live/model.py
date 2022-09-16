@@ -1,3 +1,10 @@
+'''
+Description: 
+Autor: LucinF
+Date: 2022-08-11 23:08:58
+LastEditors: LucinF
+LastEditTime: 2022-09-12 22:42:07
+'''
 from pydantic import BaseSettings
 from pydantic import BaseModel
 from nonebot.adapters.onebot.v11 import MessageSegment,Message
@@ -18,6 +25,12 @@ class LiveInfo(BaseModel):
     uid : str
     result : dict
 
+    '''
+    description: 返回@全体成员的Message信息
+    param {*} self
+    return {*} Message
+    author: LucinF
+    '''    
     def live_at_all(self) -> Message:
         room_id = self.result['short_id'] if self.result['short_id'] else self.result['room_id']
         url = 'https://live.bilibili.com/' + str(room_id)

@@ -36,7 +36,7 @@ async def live_got(matcher: Matcher, event:GroupMessageEvent,uid:str=ArgPlainTex
     if list and list[0].isdigit():
         uid = list[0]
         result = await get_live_status_list([uid])
-        if result != []:
+        if result.error is False and result.result != []:
             live_table = Database.Live_subscribe(uid=uid,subscriber_id=str(event.group_id))
             intResult = await live_table.insert()
             if intResult.error is False:
@@ -79,11 +79,15 @@ async def delete_got(matcher:Matcher,event:GroupMessageEvent,uid:str=ArgPlainTex
 @scheduler.scheduled_job("interval", seconds=10, id="live_push")
 async def live_push():
     uid_result =await Database.Live_subscribe(uid=' ',subscriber_id=' ').select_uids()
-    live_statu_dict = await get_live_status_list(uid_result.result)
-    if not live_statu_dict:
-        logger.info(uid_result)
+    try:
+        dictresult = await get_live_status_list(uid_result.result)
+    except Exception as e:
+        logger.error(repr(e))
+        return 
+    if dictresult.error or dictresult.error is False and dictresult.result == []:
+        logger.info(repr(dictresult))
         return
-    for uid,result in live_statu_dict.items():
+    for uid,result in dictresult.result.items():
         if uid not in live_statu:
             live_statu[uid] = 1
         statu = 0 if result['live_status'] == 2 else result['live_status']
