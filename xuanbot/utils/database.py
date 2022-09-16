@@ -76,27 +76,27 @@ class Live_subscribe(Base):
                 subscription = session_result.scalar_one()
                 result = Result.IntResult(error=False, info="Exist", result=subscription)
         except NoResultFound:
-            result = Result.IntResult(error=True, info="Select_No_Result", result=0)
+            result = Result.IntResult(error=True, info="Live_subscribe.select():Select_No_Result", result=0)
         except MultipleResultsFound:
-            result = Result.IntResult(error=True, info="Multiple_Results_Found", result=-1)
+            result = Result.IntResult(error=True, info="Live_subscribe.select():Multiple_Results_Found", result=-1)
         except Exception as e:
-            result = Result.IntResult(error=True, info=repr(e), result=-2)
+            result = Result.IntResult(error=True, info='Live_subscribe.select():'+repr(e), result=-2)
         return result
 
     async def insert(self) -> Result.IntResult:
         try:
             result = await self.select()
             if  not result.error:
-                return Result.IntResult(error=True,info=f'The uid:{self.uid} group:{self.subscriber_id} was existed',result=result.result)
+                return Result.IntResult(error=True,info=f'Live_subscribe.select():The uid:{self.uid} group:{self.subscriber_id} was existed',result=result.result)
             elif result.error and result.result == 0:
                 async_session = DB().get_session()
                 async with async_session.begin() as session:
                     session.add(self)
-                return Result.IntResult(error=False,info='Instance insert successed',result=0)
+                return Result.IntResult(error=False,info='Live_subscribe.insert():Instance insert successed',result=0)
             else:
                 return result
         except Exception as e:
-            result = Result.IntResult(error=True, info=repr(e), result=-2)
+            result = Result.IntResult(error=True, info='Live_subscribe.insert():'+repr(e), result=-2)
         return result
 
     async def delete(self) -> Result.IntResult:
@@ -108,11 +108,11 @@ class Live_subscribe(Base):
                     await session.execute(delete(Live_subscribe).where(
                             Live_subscribe.uid == self.uid).where(
                             Live_subscribe.subscriber_id == self.subscriber_id))
-                return Result.IntResult(error=False,info='Instance delete successed',result=0)
+                return Result.IntResult(error=False,info='Live_subscribe.delete():Instance delete successed',result=0)
             else:
                 return result
         except Exception as e:
-            result = Result.IntResult(error=True, info=repr(e), result=-2)
+            result = Result.IntResult(error=True, info='Live_subscribe.delete():'+repr(e), result=-2)
         return result
     
     async def select_uids(self) -> Result.ListResult:
@@ -120,11 +120,11 @@ class Live_subscribe(Base):
         try:
             async with async_session.begin() as session:
                 session_result = await session.execute(select(distinct(Live_subscribe.uid)))
-                result = Result.ListResult(error=False,info='Select uids successed',result= session_result.scalars().all())
+                result = Result.ListResult(error=False,info='Live_subscribe.select_uids():Select uids successed',result= session_result.scalars().all())
         except NoResultFound:
-            result = Result.ListResult(error=False, info="Select uids not result", result=[])
+            result = Result.ListResult(error=False, info="Live_subscribe.select_uids():Select uids not result", result=[])
         except Exception as e:
-            result = Result.ListResult(error=True, info=repr(e), result=[])
+            result = Result.ListResult(error=True, info="Live_subscribe.select_uids():"+repr(e), result=[])
         return result
         
 
@@ -135,9 +135,96 @@ class Live_subscribe(Base):
             async with async_session.begin()  as session: 
                 session_result = await session.execute(select(distinct(Live_subscribe.subscriber_id)).where(
                             Live_subscribe.uid == self.uid))
-                result = Result.ListResult(error=False,info='Select subscribes successed',result= session_result.scalars().all())
+                result = Result.ListResult(error=False,info='Live_subscribe.select_subscribe():Select subscribes successed',result= session_result.scalars().all())
         except NoResultFound:
-            result = Result.ListResult(error=False, info="Select subscribes not result", result=[])
+            result = Result.ListResult(error=False, info="Live_subscribe.select_subscribe():Select subscribes not result", result=[])
         except Exception as e:
-            result = Result.ListResult(error=True, info=repr(e), result=[])
+            result = Result.ListResult(error=True, info='Live_subscribe.select_subscribe():'+repr(e), result=[])
+        return result
+
+
+class Dynamic_subscribe(Base):
+    __tablename__ = 'Dynamic_subscribe'
+    id = Column(Integer, nullable=False, primary_key=True, index=True, autoincrement=True)
+    uid = Column(String(16), nullable=False, comment="B站UID")
+    subscriber_id = Column(String(16), nullable=False, comment="群号")
+
+    def __init__(self, uid:str,subscriber_id:str):
+        self.uid = uid
+        self.subscriber_id =subscriber_id
+
+    async def select(self) -> Result.IntResult:
+        async_session = DB().get_session()
+        try:
+            async with async_session.begin() as session:
+                session_result = await session.execute(select(Dynamic_subscribe).where(
+                            Dynamic_subscribe.uid == self.uid).where(
+                            Dynamic_subscribe.subscriber_id == self.subscriber_id))
+                subscription = session_result.scalar_one()
+                result = Result.IntResult(error=False, info="Exist", result=subscription)
+        except NoResultFound:
+            result = Result.IntResult(error=True, info="Dynamic_subscribe.select():Select_No_Result", result=0)
+        except MultipleResultsFound:
+            result = Result.IntResult(error=True, info="Dynamic_subscribe.select():Multiple_Results_Found", result=-1)
+        except Exception as e:
+            result = Result.IntResult(error=True, info='Dynamic_subscribe.select():'+repr(e), result=-2)
+        return result
+
+    async def insert(self) -> Result.IntResult:
+        try:
+            result = await self.select()
+            if  not result.error:
+                return Result.IntResult(error=True,info=f'Dynamic_subscribe.select():The uid:{self.uid} group:{self.subscriber_id} was existed',result=result.result)
+            elif result.error and result.result == 0:
+                async_session = DB().get_session()
+                async with async_session.begin() as session:
+                    session.add(self)
+                return Result.IntResult(error=False,info='Dynamic_subscribe.insert():Instance insert successed',result=0)
+            else:
+                return result
+        except Exception as e:
+            result = Result.IntResult(error=True, info='Dynamic_subscribe.insert():'+repr(e), result=-2)
+        return result
+
+    async def delete(self) -> Result.IntResult:
+        try:
+            result = await self.select()
+            if not result.error :
+                async_session = DB().get_session()
+                async with async_session.begin() as session:
+                    await session.execute(delete(Dynamic_subscribe).where(
+                            Dynamic_subscribe.uid == self.uid).where(
+                            Dynamic_subscribe.subscriber_id == self.subscriber_id))
+                return Result.IntResult(error=False,info='Dynamic_subscribe.delete():Instance delete successed',result=0)
+            else:
+                return result
+        except Exception as e:
+            result = Result.IntResult(error=True, info='Dynamic_subscribe.delete():'+repr(e), result=-2)
+        return result
+    
+    async def select_uids(self) -> Result.ListResult:
+        async_session = DB().get_session()
+        try:
+            async with async_session.begin() as session:
+                session_result = await session.execute(select(distinct(Dynamic_subscribe.uid)))
+                result = Result.ListResult(error=False,info='Dynamic_subscribe.select_uids():Select uids successed',result= session_result.scalars().all())
+        except NoResultFound:
+            result = Result.ListResult(error=False, info="Dynamic_subscribe.select_uids():Select uids not result", result=[])
+        except Exception as e:
+            result = Result.ListResult(error=True, info="Dynamic_subscribe.select_uids():"+repr(e), result=[])
+        return result
+        
+
+    
+    async def select_subscribe(self) -> Result.ListResult:
+        async_session = DB().get_session()
+        try:
+            async with async_session.begin()  as session: 
+                session_result = await session.execute(select(distinct(Dynamic_subscribe.subscriber_id)).where(
+                            Dynamic_subscribe.uid == self.uid))
+                result = Result.ListResult(error=False,info='Dynamic_subscribe.select_subscribe():Select subscribes successed',result= session_result.scalars().all())
+        except NoResultFound:
+            result = Result.ListResult(error=False, info="Dynamic_subscribe.select_subscribe():Select subscribes not result", result=[])
+        except Exception as e:
+            result = Result.ListResult(error=True, info='Dynamic_subscribe.select_subscribe():'+repr(e), result=[])
         return result
