@@ -3,18 +3,12 @@ Description:
 Autor: LucinF
 Date: 2022-08-11 23:08:58
 LastEditors: LucinF
-LastEditTime: 2022-09-12 22:42:07
+LastEditTime: 2022-09-16 20:31:00
 '''
-from pydantic import BaseSettings
 from pydantic import BaseModel
 from nonebot.adapters.onebot.v11 import MessageSegment,Message
 import os
 
-class Config(BaseSettings):
-    # Your Config Here
-
-    class Config:
-        extra = "ignore"
 
 def ImgPath() -> str:
     path = os.path.dirname(os.path.abspath(__file__))+'/img/'
@@ -25,13 +19,13 @@ class LiveInfo(BaseModel):
     uid : str
     result : dict
 
-    '''
-    description: 返回@全体成员的Message信息
-    param {*} self
-    return {*} Message
-    author: LucinF
-    '''    
     def live_at_all(self) -> Message:
+        ''' 返回@全体成员的主播直播消息
+
+        return {*} Message
+        
+        author: LucinF
+        '''    
         room_id = self.result['short_id'] if self.result['short_id'] else self.result['room_id']
         url = 'https://live.bilibili.com/' + str(room_id)
         name = self.result['uname']

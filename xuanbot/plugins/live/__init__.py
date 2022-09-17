@@ -1,19 +1,21 @@
-
-
-from math import fabs
-import nonebot
-from nonebot import  on_command
+'''
+Description: 
+Autor: LucinF
+Date: 2022-09-16 14:57:39
+LastEditors: LucinF
+LastEditTime: 2022-09-17 20:55:46
+'''
+from nonebot import  on_command,get_bot
 from nonebot.adapters.onebot.v11 import ActionFailed, GroupMessageEvent
 from nonebot.permission import SUPERUSER
 from nonebot import require
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler
-from .data_source import get_live_status_list
+from .data_source import Live_status
 from .model import LiveInfo
 from nonebot.log import logger
 import xuanbot.utils.database as Database
 
-from nonebot import on_command
 from nonebot.matcher import Matcher
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, ArgPlainText
@@ -35,7 +37,7 @@ async def live_got(matcher: Matcher, event:GroupMessageEvent,uid:str=ArgPlainTex
     list = uid.strip().split()
     if list and list[0].isdigit():
         uid = list[0]
-        result = await get_live_status_list([uid])
+        result = await Live_status(uids=[uid]).get_live_status_list()
         if result.error is False and result.result != []:
             live_table = Database.Live_subscribe(uid=uid,subscriber_id=str(event.group_id))
             intResult = await live_table.insert()
@@ -80,7 +82,7 @@ async def delete_got(matcher:Matcher,event:GroupMessageEvent,uid:str=ArgPlainTex
 async def live_push():
     uid_result =await Database.Live_subscribe(uid=' ',subscriber_id=' ').select_uids()
     try:
-        dictresult = await get_live_status_list(uid_result.result)
+        dictresult = await Live_status(uids=uid_result.result).get_live_status_list()
     except Exception as e:
         logger.error(repr(e))
         return 
@@ -95,7 +97,7 @@ async def live_push():
         if statu != live_statu[uid] and statu == 1:
             temp = LiveInfo(uid=uid,result=result)
             msg = temp.live_at_all()
-            bot = nonebot.get_bot()
+            bot = get_bot()
             group_result = await Database.Live_subscribe(uid=uid,subscriber_id=' ').select_subscribe()
             try:
                     for group in group_result.result:
