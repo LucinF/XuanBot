@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-08-13 21:34:50
 LastEditors: LucinF
-LastEditTime: 2022-09-16 21:23:53
+LastEditTime: 2022-09-21 23:11:37
 '''
 from dataclasses import dataclass
 import re
@@ -67,5 +67,21 @@ class Result:
         result:dict
 
         def __repr__(self) -> str:
-            return f"<ListResult(error={self.error}, info={self.info}, result={self.result})>"
+            return f"<DictResult(error={self.error}, info={self.info}, result={self.result})>"
+
+    @dataclass
+    class StrResult(BaseResult):
+        """成员变量:
+        
+        error : bool 
+        函数执行是否异常
+        info : str
+        执行成功/异常信息
+        result : str
+        存储str类型的返回结果
+        """
+        result:str
+
+        def __repr__(self) -> str:
+            return f"<StrResult(error={self.error}, info={self.info}, result={self.result})>"
 
