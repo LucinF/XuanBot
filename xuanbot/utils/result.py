@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-08-13 21:34:50
 LastEditors: LucinF
-LastEditTime: 2022-09-21 23:06:13
+LastEditTime: 2022-09-21 23:11:37
 '''
 from dataclasses import dataclass
 import re
@@ -67,7 +67,7 @@ class Result:
         result:dict
 
         def __repr__(self) -> str:
-            return f"<StrResult(error={self.error}, info={self.info}, result={self.result})>"
+            return f"<DictResult(error={self.error}, info={self.info}, result={self.result})>"
 
     @dataclass
     class StrResult(BaseResult):
