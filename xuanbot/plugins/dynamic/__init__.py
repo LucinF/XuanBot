@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-08-11 22:45:26
 LastEditors: LucinF
-LastEditTime: 2022-09-17 22:41:07
+LastEditTime: 2022-09-21 22:34:38
 '''
 #import xuanbot.utils.database
 import imp
@@ -37,7 +37,8 @@ from nonebot.params import CommandArg, ArgPlainText
 # @dynamic_command.handle()
 # async def dynamic_command_handle(matcher: Matcher,args: Message = CommandArg()):
 #     plain_text = args.extract_plain_text().strip()  # 首次发送命令时跟随的参数，例：/天气 上海，则args为上海
-#     result = await Dynamic(dynamic_id =706783911487733760).get_screenshot()
+#     logger.info(plain_text)
+#     result = await Dynamic(dynamic_id =int(plain_text)).get_screenshot()
 #     # cover = 'file:///'+ImgPath()+'/1.jpg'
 #     # logger.info(Path('F://bot//XuanBot//xuanbot//plugins//dynamitc//1.png').resolve())
 #     # img =Image.open('F://bot//XuanBot//xuanbot//plugins//dynamitc//1.png').resize((1920*2,1080*2))

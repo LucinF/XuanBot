@@ -3,8 +3,9 @@ Description:
 Autor: LucinF
 Date: 2022-09-04 15:54:34
 LastEditors: LucinF
-LastEditTime: 2022-09-17 22:41:28
+LastEditTime: 2022-09-21 22:34:25
 '''
+from tkinter.messagebox import NO
 import httpx
 from pyppeteer import launch
 from pydantic import BaseModel
@@ -70,18 +71,23 @@ class Dynamic(BaseModel):
             Returns:
                 img:bytes|str
         """
-        browser = await launch(args=["--no-sandbox"], waitUntil="networkidle0", timeout=10000, handleSIGINT=False,
+        browser = await launch( args=["--no-sandbox"],dumpio=True,waitUntil="networkidle0", timeout=10000, handleSIGINT=False,
                             handleSIGTERM=False, handleSIGHUP=False)
+        assert browser is not None
         page = await browser.newPage()
+        assert page is not None
         for i in range(retry + 1):
             try:
                 await page.goto(self.__dynamic_url % self.dynamic_id)
-                await page.waitForSelector("div[class=card-content]")
+                await page.waitForSelector("div[class=bili-dyn-item__main]")
                 await page.setViewport(viewport={"width": 2000, "height": 1080})
-                card = await page.querySelector("div[class=detail-card]")
+                card = await page.querySelector("div[class=bili-dyn-item__main]")
                 assert card is not None
                 clip = await card.boundingBox()
+                assert clip is not None
                 image = await page.screenshot(clip=clip, encoding="base64")#,path='%s.png'%(self.dynamic_id))
+                assert image is not None
+                #await page.screenshot(clip=clip, encoding="binary",path='%s.png'%(self.dynamic_id))
                 await browser.close()
                 return image
             except Exception as e:
