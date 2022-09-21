@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-09-16 14:57:39
 LastEditors: LucinF
-LastEditTime: 2022-09-17 20:55:46
+LastEditTime: 2022-09-20 23:51:01
 '''
 from nonebot import  on_command,get_bot
 from nonebot.adapters.onebot.v11 import ActionFailed, GroupMessageEvent
@@ -78,7 +78,7 @@ async def delete_got(matcher:Matcher,event:GroupMessageEvent,uid:str=ArgPlainTex
 
 
 
-@scheduler.scheduled_job("interval", seconds=10, id="live_push")
+@scheduler.scheduled_job("interval", seconds=60, id="live_push")
 async def live_push():
     uid_result =await Database.Live_subscribe(uid=' ',subscriber_id=' ').select_uids()
     try:
