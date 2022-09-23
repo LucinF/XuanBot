@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-09-16 14:57:39
 LastEditors: LucinF
-LastEditTime: 2022-09-20 23:51:01
+LastEditTime: 2022-09-23 23:03:37
 '''
 from nonebot import  on_command,get_bot
 from nonebot.adapters.onebot.v11 import ActionFailed, GroupMessageEvent
@@ -14,7 +14,7 @@ from nonebot_plugin_apscheduler import scheduler
 from .data_source import Live_status
 from .model import LiveInfo
 from nonebot.log import logger
-import xuanbot.utils.database as Database
+from xuanbot.utils.database import Live_subscribe
 
 from nonebot.matcher import Matcher
 from nonebot.adapters import Message
@@ -35,11 +35,12 @@ async def live_handle(matcher: Matcher,args: Message = CommandArg()):
 @live.got('live',prompt='Give me uid who you wanna to push')
 async def live_got(matcher: Matcher, event:GroupMessageEvent,uid:str=ArgPlainText('live')):
     list = uid.strip().split()
+    matcher.stop_propagation()
     if list and list[0].isdigit():
         uid = list[0]
         result = await Live_status(uids=[uid]).get_live_status_list()
         if result.error is False and result.result != []:
-            live_table = Database.Live_subscribe(uid=uid,subscriber_id=str(event.group_id))
+            live_table = Live_subscribe(uid=uid,subscriber_id=str(event.group_id))
             intResult = await live_table.insert()
             if intResult.error is False:
                 await matcher.finish(f'uid:{uid} insert success.')
@@ -62,9 +63,10 @@ async def delete_handle(matcher:Matcher,args=CommandArg()):
 @live_delete.got('delete',prompt="Who don't you want to follow?")
 async def delete_got(matcher:Matcher,event:GroupMessageEvent,uid:str=ArgPlainText('delete')):
     list = uid.strip().split()
+    matcher.stop_propagation()
     if list and list[0].isdigit():
         uid = list[0]
-        live_table = Database.Live_subscribe(uid=uid,subscriber_id=str(event.group_id))
+        live_table = Live_subscribe(uid=uid,subscriber_id=str(event.group_id))
         intResult = await live_table.delete()
         if intResult.error is False:
             result = await live_table.select_subscribe()
@@ -80,7 +82,12 @@ async def delete_got(matcher:Matcher,event:GroupMessageEvent,uid:str=ArgPlainTex
 
 @scheduler.scheduled_job("interval", seconds=60, id="live_push")
 async def live_push():
-    uid_result =await Database.Live_subscribe(uid=' ',subscriber_id=' ').select_uids()
+    table = Live_subscribe(uid=' ',subscriber_id=' ')
+    uid_result =await table.select_uids()
+    del table
+    if(uid_result.error == True):
+        logger.error(uid_result.info)
+        return
     try:
         dictresult = await Live_status(uids=uid_result.result).get_live_status_list()
     except Exception as e:
@@ -98,7 +105,7 @@ async def live_push():
             temp = LiveInfo(uid=uid,result=result)
             msg = temp.live_at_all()
             bot = get_bot()
-            group_result = await Database.Live_subscribe(uid=uid,subscriber_id=' ').select_subscribe()
+            group_result = await Live_subscribe(uid=uid,subscriber_id=' ').select_subscribe()
             try:
                     for group in group_result.result:
                         await bot.call_api("send_msg", **{
