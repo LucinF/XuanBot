@@ -279,7 +279,7 @@ class Dynamic_recode(Base):
     dynamic_id = Column(String(30), nullable=False,comment='B站动态id')
     timestamp = Column(String(20), nullable =False,comment='时间戳')
 
-    def __init__(self,uid,dynamic_id,timestamp):
+    def __init__(self,uid:str,dynamic_id:str,timestamp:str):
         self.uid = uid
         self.dynamic_id = dynamic_id
         self.timestamp =timestamp
@@ -342,25 +342,47 @@ class Dynamic_recode(Base):
             result = Result.IntResult(error=True, info='Dynamic_recode.delete():'+repr(e), result=-2)
         return result
 
-    async def get_last_timestamp(self) -> Result.IntResult:
+    async def get_last_dynamic(self) -> Result.DictResult:
         '''根据主播uid获取表内最新动态的时间戳
         
-        return {*} Result.IntResult
-                    IntResult.result存放时间戳
+        return {*} Result.DictResult
+                    [{'type':int 结果类型
+                    'dynamic_id':str 动态id
+                    'timestamp':str 动态时间戳}]
         
         author: LucinF
         '''
         try:
             async_session = DB().get_session()
             async with async_session.begin() as session:
-                session_result = await session.execute(select(Dynamic_recode.timestamp).where(
+                session_result = await session.execute(select(Dynamic_recode.dynamic_id,Dynamic_recode.timestamp).where(
                         Dynamic_recode.uid == self.uid).order_by(desc(Dynamic_recode.timestamp)))
-                tiemresult =  session_result.scalar_one()
-                result = Result.IntResult(error=False,info='Dynamic_recode.get_last_timestamp():success.',result= int(tiemresult))
+                row =  session_result.first()
+                dictresult = {
+                    'type':1,
+                    'dynamic_id':str(row[0]),
+                    'timestamp':str(row[1])
+                }
+                result = Result.DictResult(error=False,info='Dynamic_recode.get_last_timestamp():success.',result= dictresult)
         except NoResultFound:
-            result = Result.IntResult(error=True, info="Dynamic_recode.get_last_timestamp():Select_No_Result", result=0)
+            dictresult = {
+                    'type':0,
+                    'dynamic_id':'',
+                    'timestamp':''
+                }
+            result = Result.DictResult(error=True, info="Dynamic_recode.get_last_timestamp():Select_No_Result", result=dictresult)
         except MultipleResultsFound:
-            result = Result.IntResult(error=True, info="Dynamic_recode.get_last_timestamp():Multiple_Results_Found", result=-1)
+            dictresult = {
+                    'type':-1,
+                    'dynamic_id':'',
+                    'timestamp':''
+                }
+            result = Result.DictResult(error=True, info="Dynamic_recode.get_last_timestamp():Multiple_Results_Found", result=dictresult)
         except Exception as e:
-            result = Result.IntResult(error=True, info='Dynamic_recode.get_last_timestamp():'+repr(e), result=-2)
+            dictresult = {
+                    'type':-2,
+                    'dynamic_id':'',
+                    'timestamp':''
+                }
+            result = Result.DictResult(error=True, info='Dynamic_recode.get_last_timestamp():'+repr(e), result=dictresult)
         return result
