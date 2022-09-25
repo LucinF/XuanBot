@@ -13,9 +13,8 @@ nonebot2 = "^2.0.0-beta.1"
 nb-cli = "^0.6.0"
 
 [tool.nonebot]
-plugins = ["nonebot_plugin_apscheduler","xuanbot.plugins.live"]
-#plugin_dirs = ["xuanbot/plugins"]
-plugin_dirs = []
+plugins = ["nonebot_plugin_apscheduler"]
+plugin_dirs = ["xuanbot/plugins"]
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
