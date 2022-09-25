@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-08-11 22:45:26
 LastEditors: LucinF
-LastEditTime: 2022-09-25 23:34:22
+LastEditTime: 2022-09-26 01:13:54
 '''
 #import xuanbot.utils.database
 # import imp
@@ -112,7 +112,7 @@ async def dynamic_push():
         if(last_dynamic_result.error == True):
             logger.error(f'获取主播uid:{uid}最新动态时间戳失败,错误信息:\n{last_dynamic_result.info}')
             continue
-        logger.info(repr(last_dynamic_result.result))
+        # logger.info(repr(last_dynamic_result.result))
 
         #先获取最新的动态，插入表中，再发送消息，避免出问题堆积发送过多延后动态
         dynamic_last_list = await dynamic_list(uid=uid,

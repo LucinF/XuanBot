@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-09-16 14:57:39
 LastEditors: LucinF
-LastEditTime: 2022-09-23 23:03:37
+LastEditTime: 2022-09-26 01:19:11
 '''
 from nonebot import  on_command,get_bot
 from nonebot.adapters.onebot.v11 import ActionFailed, GroupMessageEvent
@@ -70,7 +70,7 @@ async def delete_got(matcher:Matcher,event:GroupMessageEvent,uid:str=ArgPlainTex
         intResult = await live_table.delete()
         if intResult.error is False:
             result = await live_table.select_subscribe()
-            if result.error == False and result.result == []:
+            if result.error == True and result.result == []:
                 live_statu.pop(uid,0)
             await matcher.finish(f'uid:{uid} delete success.')
         else:
