@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-09-04 15:54:34
 LastEditors: LucinF
-LastEditTime: 2022-09-25 23:34:38
+LastEditTime: 2022-09-26 23:50:12
 '''
 # from asyncio.log import logger
 # from cmath import inf
@@ -116,7 +116,7 @@ class Dynamic(BaseModel):
                 encoding='binary' 返回bytes
                 """
                 image = await page.screenshot(clip=clip, encoding="base64")#,path='%s.png'%(self.dynamic_id))
-                await page.screenshot(clip=clip, encoding="binary",path='%s.png'%(self.dynamic_id))
+                #await page.screenshot(clip=clip, encoding="binary",path='%s.png'%(self.dynamic_id))
                 assert image is not None
                 await browser.close()
                 return Result.StrResult(error=False,info=f'动态{str(self.dynamic_id)}截图成功.',result=image)  # type: ignore
