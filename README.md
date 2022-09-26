@@ -12,6 +12,7 @@
 4. 怎么用上面写的命令?首先pip install nb-cli 安装所需要的nonebot框架.然后把上面俩个命令复制运行就行了
 5. 使用方面遇到不清楚和遇到困难的地方，可以在issuse那里贴上flag:help wanted 留言,我一般每天上去看一次，也可以发我Github上的邮箱留言.
 
+
 ## 目前你需要知道的
 1. 目前go-cqhttp端在win上可能有些bug，比如动态插件里面发送动态的截图可能失败，但Ubuntu上我测试能成功发送，建议部署到Linux。
 2. 部署到Ubuntu server那种无桌面GUI版本的Linux系统，建议使用NoneBot的go-cqhttp插件:nb plugin install nonebot-plugin-gocqhttp .
