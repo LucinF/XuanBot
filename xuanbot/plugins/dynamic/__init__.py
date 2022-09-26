@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-08-11 22:45:26
 LastEditors: LucinF
-LastEditTime: 2022-09-26 01:13:54
+LastEditTime: 2022-09-26 23:44:09
 '''
 #import xuanbot.utils.database
 # import imp
@@ -106,6 +106,7 @@ async def dynamic_push():
         logger.error(result.info)
         return
 
+    bot = get_bot()
     for uid in result.result:
         table = Dynamic_recode(uid=uid,dynamic_id='',timestamp='')
         last_dynamic_result = await table.get_last_dynamic()
@@ -121,27 +122,24 @@ async def dynamic_push():
         if(dynamic_last_list.error):
             logger.error(dynamic_last_list.info)
             continue
+        table = Dynamic_subscribe(uid=uid,subscriber_id='')
+        group_result = await table.select_subscribe()
         for row in dynamic_last_list.result:
             insert_result = await Dynamic_recode(uid=uid,dynamic_id=str(row['dynamic_id']),timestamp=str(row['timestamp'])).insert()
             if(insert_result.error):
                 logger.error(insert_result.info)
-
-        table = Dynamic_subscribe(uid=uid,subscriber_id='')
-        group_result = await table.select_subscribe()
+            if(group_result.error is False):
+                msg = await Dynamic(dynamic_id=row['dynamic_id'],dynamic_type=row['type'],dynamic_user=uid).send_msg()
+                for group in group_result.result:
+                    try:
+                        await bot.call_api("send_msg", **{
+                            "message": msg.result,
+                            "group_id": group
+                            })
+                    except ActionFailed as e:
+                        logger.error(e)
         if(group_result.error == True):
             logger.error(f'获取主播uid:{uid}群号列表失败,错误信息:\n{group_result.info}')
             continue
         del table
-
-        bot = get_bot()
-        for row in dynamic_last_list.result:
-            msg = await Dynamic(dynamic_id=row['dynamic_id'],dynamic_type=row['type'],dynamic_user=uid).send_msg()
-            for group in group_result.result:
-                try:
-                    await bot.call_api("send_msg", **{
-                        "message": msg.result,
-                        "group_id": group
-                        })
-                except ActionFailed as e:
-                    logger.error(e)
         await asyncsleep(10)
