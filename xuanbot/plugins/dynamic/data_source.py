@@ -58,9 +58,16 @@ class Dynamic_history(BaseModel):
                                                                                   msg:{r['msg']}.""", result={})
         rdict = {'has_more':r['data']['has_more'],
                  'next_offset':r['data']['next_offset']}
-        rdict['list'] = []
-        for card in r['data']['cards']:
-            rdict['list'].append({'dynamic_id':card['desc']['dynamic_id'],'timestamp':card['desc']['timestamp'],'type':card['desc']['type']})
+        # rdict['list'] = []
+        # for card in r['data']['cards']:
+        #     rdict['list'].append({'dynamic_id':card['desc']['dynamic_id'],'timestamp':card['desc']['timestamp'],'type':card['desc']['type']})
+        rdict['list'] = [{
+            'dynamic_id':card['desc']['dynamic_id'],
+            'timestamp':card['desc']['timestamp'],
+            'type':card['desc']['type']
+            }
+            for card in r['data']['cards']
+        ]
         return Result.DictResult(error=False, info='',result=rdict)
 
 
