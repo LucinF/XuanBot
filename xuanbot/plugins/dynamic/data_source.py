@@ -113,7 +113,7 @@ class Dynamic(BaseModel):
             try:
                 await page.goto(self.__dynamic_url % self.dynamic_id)
                 await page.waitForSelector("div[class=bili-dyn-item__main]")
-                await page.setViewport(viewport={"width": 2000, "height": 1080})
+                await page.setViewport(viewport={"width": 2560*5, "height": 1440*5})
                 card = await page.querySelector("div[class=bili-dyn-item__main]")
                 assert card is not None
                 clip = await card.boundingBox()
