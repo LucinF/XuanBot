@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-08-11 22:45:26
 LastEditors: LucinF
-LastEditTime: 2022-09-26 23:44:09
+LastEditTime: 2022-10-03 13:40:40
 '''
 #import xuanbot.utils.database
 # import imp
@@ -129,7 +129,7 @@ async def dynamic_push():
             if(insert_result.error):
                 logger.error(insert_result.info)
             if(group_result.error is False):
-                msg = await Dynamic(dynamic_id=row['dynamic_id'],dynamic_type=row['type'],dynamic_user=uid).send_msg()
+                msg = await Dynamic(dynamic_id=row['dynamic_id'],dynamic_type=row['type'],dynamic_user=row['uname']).send_msg()
                 for group in group_result.result:
                     try:
                         await bot.call_api("send_msg", **{

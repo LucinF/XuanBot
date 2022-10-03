@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-08-11 23:08:50
 LastEditors: LucinF
-LastEditTime: 2022-09-24 22:34:37
+LastEditTime: 2022-10-03 13:36:26
 '''
 
 # from pydantic import BaseModel
@@ -23,8 +23,9 @@ async def dynamic_list(uid:str,dynamic_id:int,timestamp:int) -> Result.ListResul
         Returns Result.ListResult
         result:List[Dict] 
                     [{'dynamic_id':int, 动态id
-                    'timestamp':int 动态时间戳,
-                    'type':int 动态类型}]
+                    'timestamp':int 动态时间戳
+                    'type':int 动态类型
+                    'uname':str up主用户名}]
     """
     result = Dynamic_history(uid=int(uid),offset_dynamic_id=0).get_history_list()
     if(result.error):

@@ -3,12 +3,13 @@ Description:
 Autor: LucinF
 Date: 2022-09-04 15:54:34
 LastEditors: LucinF
-LastEditTime: 2022-09-26 23:50:12
+LastEditTime: 2022-10-03 13:35:08
 '''
 # from asyncio.log import logger
 # from cmath import inf
 # import imp
 # from tkinter import N
+from asyncio import exceptions
 import httpx
 from pyppeteer import launch
 from pydantic import BaseModel
@@ -43,7 +44,8 @@ class Dynamic_history(BaseModel):
                     'list':list
                                 [{'dynamic_id':int, 动态id
                                 'timestamp':int 动态时间戳
-                                'type':int 动态类型}]
+                                'type':int 动态类型
+                                'uname':str up主用户名}]
                     }
         """
         result = httpx.get(url=self.__history_url, params= {'host_uid':self.uid, 
@@ -61,14 +63,19 @@ class Dynamic_history(BaseModel):
         # rdict['list'] = []
         # for card in r['data']['cards']:
         #     rdict['list'].append({'dynamic_id':card['desc']['dynamic_id'],'timestamp':card['desc']['timestamp'],'type':card['desc']['type']})
-        rdict['list'] = [{
-            'dynamic_id':card['desc']['dynamic_id'],
-            'timestamp':card['desc']['timestamp'],
-            'type':card['desc']['type']
-            }
-            for card in r['data']['cards']
-        ]
-        return Result.DictResult(error=False, info='',result=rdict)
+        try:
+            rdict['list'] = [{
+                'dynamic_id':card['desc']['dynamic_id'],
+                'timestamp':card['desc']['timestamp'],
+                'type':card['desc']['type'],
+                'uname':card['desc']['user_profile']['info']['uname']
+                }
+                for card in r['data']['cards']
+            ]
+            return Result.DictResult(error=False, info='',result=rdict)
+        except Exception as e:
+            from traceback import format_exc
+            return Result.DictResult(error=True,info=f'动态{self.uid}历史动态获取异常,错误原因:\n{format_exc()}',result={})
 
 
 class Dynamic(BaseModel):
