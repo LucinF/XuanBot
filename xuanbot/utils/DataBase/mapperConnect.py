@@ -14,7 +14,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-__PROJECT_ROOT__ = str(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))).replace('\\','/')
+__PROJECT_ROOT__ = str(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))).replace('\\','/')
 logger.info(f"{__PROJECT_ROOT__}/xuanbot.db")
 
 try:
