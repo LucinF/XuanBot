@@ -3,12 +3,13 @@ Description:
 Autor: LucinF
 Date: 2022-09-04 15:54:34
 LastEditors: LucinF
-LastEditTime: 2022-09-25 23:34:38
+LastEditTime: 2022-10-03 13:35:08
 '''
 # from asyncio.log import logger
 # from cmath import inf
 # import imp
 # from tkinter import N
+from asyncio import exceptions
 import httpx
 from pyppeteer import launch
 from pydantic import BaseModel
@@ -43,7 +44,8 @@ class Dynamic_history(BaseModel):
                     'list':list
                                 [{'dynamic_id':int, 动态id
                                 'timestamp':int 动态时间戳
-                                'type':int 动态类型}]
+                                'type':int 动态类型
+                                'uname':str up主用户名}]
                     }
         """
         result = httpx.get(url=self.__history_url, params= {'host_uid':self.uid, 
@@ -58,10 +60,22 @@ class Dynamic_history(BaseModel):
                                                                                   msg:{r['msg']}.""", result={})
         rdict = {'has_more':r['data']['has_more'],
                  'next_offset':r['data']['next_offset']}
-        rdict['list'] = []
-        for card in r['data']['cards']:
-            rdict['list'].append({'dynamic_id':card['desc']['dynamic_id'],'timestamp':card['desc']['timestamp'],'type':card['desc']['type']})
-        return Result.DictResult(error=False, info='',result=rdict)
+        # rdict['list'] = []
+        # for card in r['data']['cards']:
+        #     rdict['list'].append({'dynamic_id':card['desc']['dynamic_id'],'timestamp':card['desc']['timestamp'],'type':card['desc']['type']})
+        try:
+            rdict['list'] = [{
+                'dynamic_id':card['desc']['dynamic_id'],
+                'timestamp':card['desc']['timestamp'],
+                'type':card['desc']['type'],
+                'uname':card['desc']['user_profile']['info']['uname']
+                }
+                for card in r['data']['cards']
+            ]
+            return Result.DictResult(error=False, info='',result=rdict)
+        except Exception as e:
+            from traceback import format_exc
+            return Result.DictResult(error=True,info=f'动态{self.uid}历史动态获取异常,错误原因:\n{format_exc()}',result={})
 
 
 class Dynamic(BaseModel):
@@ -106,7 +120,7 @@ class Dynamic(BaseModel):
             try:
                 await page.goto(self.__dynamic_url % self.dynamic_id)
                 await page.waitForSelector("div[class=bili-dyn-item__main]")
-                await page.setViewport(viewport={"width": 2000, "height": 1080})
+                await page.setViewport(viewport={"width": 2560*5, "height": 1440*5})
                 card = await page.querySelector("div[class=bili-dyn-item__main]")
                 assert card is not None
                 clip = await card.boundingBox()
@@ -116,7 +130,7 @@ class Dynamic(BaseModel):
                 encoding='binary' 返回bytes
                 """
                 image = await page.screenshot(clip=clip, encoding="base64")#,path='%s.png'%(self.dynamic_id))
-                await page.screenshot(clip=clip, encoding="binary",path='%s.png'%(self.dynamic_id))
+                #await page.screenshot(clip=clip, encoding="binary",path='%s.png'%(self.dynamic_id))
                 assert image is not None
                 await browser.close()
                 return Result.StrResult(error=False,info=f'动态{str(self.dynamic_id)}截图成功.',result=image)  # type: ignore
