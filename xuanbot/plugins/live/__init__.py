@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-09-16 14:57:39
 LastEditors: LucinF
-LastEditTime: 2022-09-26 01:19:11
+LastEditTime: 2023-03-09 22:14:48
 '''
 from nonebot import  on_command,get_bot
 from nonebot.adapters.onebot.v11 import ActionFailed, GroupMessageEvent
@@ -14,7 +14,7 @@ from nonebot_plugin_apscheduler import scheduler
 from .data_source import Live_status
 from .model import LiveInfo
 from nonebot.log import logger
-from xuanbot.utils.database import Live_subscribe
+from xuanbot.utils.DataBase.liveMapper import Live_subscribe
 
 from nonebot.matcher import Matcher
 from nonebot.adapters import Message
@@ -80,7 +80,7 @@ async def delete_got(matcher:Matcher,event:GroupMessageEvent,uid:str=ArgPlainTex
 
 
 
-@scheduler.scheduled_job("interval", seconds=60, id="live_push")
+@scheduler.scheduled_job("interval", seconds=10, id="live_push")
 async def live_push():
     table = Live_subscribe(uid=' ',subscriber_id=' ')
     uid_result =await table.select_uids()

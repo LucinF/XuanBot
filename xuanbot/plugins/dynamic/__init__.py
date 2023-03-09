@@ -3,7 +3,7 @@ Description:
 Autor: LucinF
 Date: 2022-08-11 22:45:26
 LastEditors: LucinF
-LastEditTime: 2022-09-26 01:13:54
+LastEditTime: 2023-03-09 21:40:17
 '''
 #import xuanbot.utils.database
 # import imp
@@ -22,7 +22,7 @@ from .model import get_timestamp_now,dynamic_list
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Message
 from nonebot.params import CommandArg, ArgPlainText
-from xuanbot.utils.database import Dynamic_subscribe,Dynamic_recode
+from xuanbot.utils.DataBase.dynamicMapper import Dynamic_subscribe,Dynamic_recode
 from asyncio import sleep as asyncsleep
 # import os
 # from pathlib import Path
