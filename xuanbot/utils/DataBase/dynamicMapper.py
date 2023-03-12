@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String,select, distinct,delete,desc
 from sqlalchemy.exc import NoResultFound, MultipleResultsFound
 from xuanbot.utils.result import Result
-from xuanbot.utils.DataBase.mapperConnect import Base,DB
+from .mapperConnect import Base,DB
 
 class Dynamic_subscribe(Base):
     __tablename__ = 'Dynamic_subscribe'
